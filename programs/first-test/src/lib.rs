@@ -1,4 +1,4 @@
-use anchor_lang::prelude::*;
+use anchor_lang::prelude::*; //importar creates (librerias)
 
 //instruccion que creea un contador en Solana
 // contador: número - inicia en 0
@@ -14,7 +14,7 @@ pub mod contador {
     pub fn crear_contador(ctx: Context<CrearContador>) -> Result<()> {
         // 5. codigo de la instrucción
         ctx.accounts.contador.valor = 0;
-        Ok(()) // retorna Ok
+        Ok(()) // retorna Ok -> no se pone ; porque es el retorno, parecido en C++, pero aqui ES OBLIGATORIO!
     }
 
 }
