@@ -104,7 +104,17 @@ Hay cuentas ejecutable y no ejecutables.
 - cuenta buffer: temporal
 
 Hay programas On-Chain (comunidad) y nativos (solana).
-#### Links compartidos
+#### ➕ Extra
+##### Calcular rent excempt con solana
+- rent-excempt: `solana rent <tamaño_cuenta_bytes>`
+```
+⚠️ Tamaño de la cuenta -> sin contar el overhead (128bytes)
+```
+```
+👁️ Mejor ejecutar el codigo en solana playground, ya que en WSL nos dara menos información
+```
+    
+#### Links
 - [Modelo de cuentas](https://solana.com/es/docs/core/accounts)
 - [Renta/comisiones](https://solana.com/es/docs/core/fees)
 - [Solana CLI](https://docs.anza.xyz/es/cli/usage)
@@ -156,7 +166,17 @@ Framework de rust, para programas de Solana.
         #[program]: define el módulo princiapl de un programa, convierte las funciones definidas en puntos de entrada de las instrucciones del programa (función que se invoca cuando una transacción llama a dicha instrucción).
 
         Punto de entrada: donde se ejecuta la lógica de la instrucción. Utiliza el contexto (cuentas necesarios y datos de entrada), proporcionados por la transacción que invoca la instrucción.
-        
+
+#### Links
+- [macros rust](https://book.rustlang-es.org/ch19-06-macros)
+- [lifetime rust](https://book.rustlang-es.org/ch10-03-lifetime-syntax)
+- [Result rust](https://book.rustlang-es.org/ch09-02-recoverable-errors-with-result)
+- [fn 'functions' rust](https://book.rustlang-es.org/ch03-03-how-functions-work)
+- [Transacciones y instrucciones](https://solana.com/es/docs/core/transactions)
+
+
+
+
 
 
 
