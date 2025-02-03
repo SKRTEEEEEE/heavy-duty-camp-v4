@@ -114,7 +114,7 @@ Hay programas On-Chain (comunidad) y nativos (solana).
 👁️ Mejor ejecutar el codigo en solana playground, ya que en WSL nos dara menos información
 ```
     
-#### Links
+#### 📄 Links
 - [Modelo de cuentas](https://solana.com/es/docs/core/accounts)
 - [Renta/comisiones](https://solana.com/es/docs/core/fees)
 - [Solana CLI](https://docs.anza.xyz/es/cli/usage)
@@ -138,13 +138,6 @@ Requiere al menos una cuenta que firme la transacción y sea mutable. Si hay var
 - transfer: `solana transfer <address_to_send> <quantity_in_$sol>`
 
     ⚠️ _si la cartera a la que enviamos nunca ha recibido fondos, nos aparecera un error, debemos incluir la bandera `--allow-unfunded-recipient`_
-#### ➕ Extra
-##### Configurar devnet en Phantom
-- [Para configurar la redes de desarrollo en Phantom, debemos hacer click en el avatar de nuestra cuenta en el header de Phantom:](./img/header-phantom.png)
-
-- [Una vez abierto, hacer click en ajustes, y ahi buscar la seccion `Ajustes para desarrolladores` -> seleccionar `Modo Testnet`](./img/options-phantom.png)
-
-    
 #### anchor
 
 Framework de rust, para programas de Solana.
@@ -166,8 +159,21 @@ Framework de rust, para programas de Solana.
         #[program]: define el módulo princiapl de un programa, convierte las funciones definidas en puntos de entrada de las instrucciones del programa (función que se invoca cuando una transacción llama a dicha instrucción).
 
         Punto de entrada: donde se ejecuta la lógica de la instrucción. Utiliza el contexto (cuentas necesarios y datos de entrada), proporcionados por la transacción que invoca la instrucción.
+#### ➕ Extra
+##### Configurar devnet en Phantom
+- [Para configurar la redes de desarrollo en Phantom, debemos hacer click en el avatar de nuestra cuenta en el header de Phantom](./img/header-phantom.png)
 
-#### Links
+- [Una vez abierto, hacer click en ajustes, y ahi buscar la seccion `Ajustes para desarrolladores` -> seleccionar `Modo Testnet`](./img/options-phantom.png)
+
+##### Interactuar con programas en [solpg.io](https://beta.solpg.io/)
+- Una vez compilado y desplegado nuestro programa. Podremos interactuar con el, para eso, debemos ir a la [sección de test](./img/test-solpg.png). 
+- En la sección `Instructions`, buscar nuestra función de instrucción. Al hacer click, aparecen tres cuentas (contexto de la instruccion).
+    - El system_program podemos dejar el que nos pone por defecto: `11111111111111111111111111111111`
+    - El 'user' _basado en los nombres de mi ejemplo en: [solpg.io](https://beta.solpg.io/679f6de0cffcf4b13384d60d) o [ejercicios.md](./ejercicios.md#2-definiendo-cuentas-e-intrucciones)_, sera el payer -> una cuenta/`publicKey` con fondos para pagar las fee
+    - El 'mensaje_account' _basado en los nombres de mi ejemplo en: [solpg.io](https://beta.solpg.io/679f6de0cffcf4b13384d60d) o [ejercicios.md](./ejercicios.md#2-definiendo-cuentas-e-intrucciones)_, sera la cuenta 'recipiente' -> una cuenta/`publicKey` donde deseamos alojar la estructura definida (en el ejemplo, `valor:String`)
+
+
+#### 📄 Links
 - [macros rust](https://book.rustlang-es.org/ch19-06-macros)
 - [lifetime rust](https://book.rustlang-es.org/ch10-03-lifetime-syntax)
 - [Result rust](https://book.rustlang-es.org/ch09-02-recoverable-errors-with-result)
