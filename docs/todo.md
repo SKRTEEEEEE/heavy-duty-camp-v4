@@ -172,6 +172,8 @@ Framework de rust, para programas de Solana.
     - El 'user' _basado en los nombres de mi ejemplo en: [solpg.io](https://beta.solpg.io/679f6de0cffcf4b13384d60d) o [ejercicios.md](./ejercicios.md#2-definiendo-cuentas-e-intrucciones)_, sera el payer -> una cuenta/`publicKey` con fondos para pagar las fee
     - El 'mensaje_account' _basado en los nombres de mi ejemplo en: [solpg.io](https://beta.solpg.io/679f6de0cffcf4b13384d60d) o [ejercicios.md](./ejercicios.md#2-definiendo-cuentas-e-intrucciones)_, sera la cuenta 'recipiente' -> una cuenta/`publicKey` donde deseamos alojar la estructura definida (en el ejemplo, `valor:String`)
 
+- Para interactuar con distintas wallets, debemos [hacer click en la pestaña de `Wallets`](./img/e.png)
+
 
 #### 📄 Links
 - [macros rust](https://book.rustlang-es.org/ch19-06-macros)
@@ -179,6 +181,57 @@ Framework de rust, para programas de Solana.
 - [Result rust](https://book.rustlang-es.org/ch09-02-recoverable-errors-with-result)
 - [fn 'functions' rust](https://book.rustlang-es.org/ch03-03-how-functions-work)
 - [Transacciones y instrucciones](https://solana.com/es/docs/core/transactions)
+
+### [3. Introducción tokens](./HDC%20v4%20-%20Clase%20#3.pdf)
+En Solana, son conocidos como SPL (Solana Program Library), existen fungibles y no fungibles (principalmente).
+
+[Tiene la misma estructura que cualquier programa, la cual viene dada por el BPF Loader (Programas nativos de Solana)](./img/estructura-tokens.png)
+#### `mint account`
+Cuenta que almazena la información (suministro total, creador y configuraciones especiales), utilizada para gestionar tokens(almacena la información principal del token). La dirección de esta cuenta es la que identifica al token en la red.
+
+    👁️ No tiene nada que ver con la accion de 'mint' tokens
+
+_La principal funcion es **indicar** el suministro total (impresiones y quemas)_
+
+Siempre será no ejecutable, ya que su función es almacenar información.
+
+_La información extra, que no viene indicada por la estructura de mint account (como imagen, web, etc..) se conoce como metadatos_
+##### [Estructura datos `mint account`](./img/datos-mint-account.png)
+##### CLI `mint account`
+Para crear tokens, utilizamos la libreria de anchor `spl-token`
+- crear token (`mint account`): `spl-token create-token`
+
+#### `token account`
+Para rastrear la propiedad de cada unidad, relaciona una cantidad de un token especifico con un usuario o propietario.
+
+    🪄 Cada usuario tendra su cuenta para almacenar las cantidades de un token en concreto
+
+El propietario de la token account, será siempre el programa de tokens.
+
+Tienen la misma estructura que cualquier cuenta, pero con una [estructura de datos `token account`](./img/estructura-token-account.png).
+##### Tokens en una billetera (wallet)
+Crear `token account` para token especifico(`mint account`), que designa a la billetera como el propietario (del `token account`).
+
+[Representación gráfica: recibiendo tokens en una billetera](./img/tokens-in-wallet.png)
+##### `ATA`: Cuenta de token asociada
+_Vincula wallet con `mint account`_
+
+Se deriva determinísticamente usando la dirección del propietario y la cuenta mint. _PDA: Se crea apartir de dos parametros, siguiendo una estructura(es posible conocer el ATA, si conocemos los parametros)_
+
+[Estructura vinculación datos `ATA` (Cuenta de token asociada)](./img/datos-ata.png)
+##### Aumentar el suministro de tokens
+Se conoce como 'mint', crea nuevas unidades y las asocia a un `token account`.
+##### CLI `token account`
+- crear `token account`: `spl-token create-account <direccion_mint_account>`
+- mint tokens: `spl-token mint <direccion_mint_account> <cantidad> -- <direccion_token_account>`
+```
+👁️ La dirección del `token account` debe estar vinculada a la direccion `mint account`
+```
+
+#### anchor
+Para poder utilizar la lógica del programa de tokens en anchor, debemos **importar la librería `anchor_spl`**
+
+
 
 
 

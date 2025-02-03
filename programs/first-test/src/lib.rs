@@ -1,71 +1,42 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token::*; //importamos la libreria y todo lo relacionado con el token
 
-declare_id!("7X9LdHU2AwpLYo97i3YzgxNvB22qm45wj3tEr3qPSkAp");
+/*
+- No es necesario crear una estructura de la cuenta especifica, ya que esta nos la facilita la libreria
+*/
 
-//4. definimos el programa
+declare_id!("7umLstBrAY48SbsRCdqVMqLvREDCZtY67dxHdNfs87Kg");
+
 #[program]
-pub mod blog {
-    use super::*;
-    //5. creamos la función de la instrucción para crear
-    pub fn crear_mensaje(ctx: Context<CrearMensaje>) -> Result<()> {
-        ctx.accounts.mensaje_account.owner = *ctx.accounts.user.key;
-        ctx.accounts.mensaje_account.valor = "Hola Mundo!".to_string();
+pub mod tokens {
+
+    use super::*; // tiene acceso a lo que declaremos fuera del módulo
+
+    //5. Crear funciones
+    pub fn create_token_mint(_ctx: Context<CreateToken>) -> Result<()>{ //Al indicar _ctx, hacemos que ctx sea una variable inusada
+        //anchor se ocupa de ?definir la logica?
         Ok(())
     }
-    //7. creamos la función de la instrucción para modificar
-    pub fn mod_mensaje(ctx: Context<ModificarMensaje>, mensaje: String) -> Result<()> {
-        //+9. requerimientos previos
-        require!(!mensaje.is_empty(), CustomError::EmptyMessage);
-        require!(mensaje.len() <= 150, CustomError::MessageTooLong);
-        require_keys_eq!(ctx.accounts.mensaje_account.owner, *ctx.accounts.user.key, CustomError::OnlyOwnerMessage);
 
-        ctx.accounts.mensaje_account.valor = mensaje;
-        Ok(())
-    }
+
 }
-//6. definimos el contexto de la instrucción para modificar
+
+//1. Crear contexto de la instrucción de crear un token
 #[derive(Accounts)]
-pub struct ModificarMensaje<'info> {
-    #[account(mut)]
-    pub mensaje_account: Account<'info, Mensaje>,
+pub struct CreateToken<'info>{
+    //2. Definir cuentas
+    #[account(init, payer=authority, mint::decimals = 2, mint::authority = authority)]
+    pub mint_account: Account<'info, Mint>, //Mint viene de anchor_spl::token, y nos trae toda la structura para una cuenta mint
 
     #[account(mut)]
-    pub user: Signer<'info>,
+    pub authority: Signer<'info>, //Cuenta para almacenar la autoridad
+
+    //3. Definir programas asociados para ejecutar la instrucción
+    pub system_program: Program<'info, System>, 
+    pub token_program: Program<'info, Token>, // inicializa el `token mint`
+
+    //4. Variables asociadas a la instrucción
+    pub rent: Sysvar<'info, Rent>, // Para que anchor sepa cual es el valor actual de la renta, y pueda hacer los calculos vinculados a las fees
+
 }
 
-//2. definimos el contexto de la instrucción para crear
-#[derive(Accounts)]
-pub struct CrearMensaje<'info> {
-    //3. cuentas
-    // cuenta 'recipinte' mensaje
-    #[account(init, payer = user, space = 8 + Mensaje::INIT_SPACE)]
-    pub mensaje_account: Account<'info, Mensaje>,
-
-    //payer
-    #[account(mut)]
-    pub user: Signer<'info>,
-
-    //system_program
-    pub system_program: Program<'info, System>,
-}
-
-//1. estructura de datos del mensaje (cuenta)
-#[account]
-#[derive(InitSpace)]
-pub struct Mensaje {
-    pub owner: Pubkey,
-    #[max_len(150)]
-    pub valor: String,
-}
-//+8. mensajes de error personalizados
-#[error_code]
-pub enum CustomError {
-    #[msg("The message exceeds 150 characters.")]
-    MessageTooLong,
-
-    #[msg("The message cannot be empty.")]
-    EmptyMessage,
-
-    #[msg("Only the owner can modify the message")]
-    OnlyOwnerMessage,
-}
