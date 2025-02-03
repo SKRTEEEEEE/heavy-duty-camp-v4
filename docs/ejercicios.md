@@ -251,9 +251,20 @@ pub enum CustomError {
 
 ---
 
-### x. 
-<details><summary>
+### 3. Interactuando con el Token Program
 
+
+<details><summary>
+Utilizando el CLI en Solana Playground, crea un nuevo token y envia la Public Key del token.
+Utilizando el CLI en Solana Playground, crea una nueva cuenta de token asociada para el token creado en la pregunta anterior y la siguiente billetera: FtetRTNM4HJWnV2dWz67cvunad4zEW2KcHozmuNz26BN y envia la Public Key de la cuenta creada.
+Crea y asigna 10 nuevas unidades del token, a la cuenta de token asociada creada anteriormente y envia la firma de la transacción.
+</summary>
+
+
+
+</details>
+<details><summary>
+Crea un nuevo proyecto de Anchor en Solana Playground y escribe el contexto de una instrucción que crea un nuevo token donde el mint authority es una cuenta diferente definida también dentro del contexto de la instrucción y comparte el link al proyecto.
 </summary>
 
 
@@ -266,13 +277,7 @@ pub enum CustomError {
 
 
 </details>
-<details><summary>
 
-</summary>
-
-
-
-</details>
 ### x. 
 <details><summary>
 
