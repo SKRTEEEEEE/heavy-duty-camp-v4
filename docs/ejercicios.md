@@ -256,15 +256,131 @@ pub enum CustomError {
 
 <details><summary>
 Utilizando el CLI en Solana Playground, crea un nuevo token y envia la Public Key del token.
+
 Utilizando el CLI en Solana Playground, crea una nueva cuenta de token asociada para el token creado en la pregunta anterior y la siguiente billetera: FtetRTNM4HJWnV2dWz67cvunad4zEW2KcHozmuNz26BN y envia la Public Key de la cuenta creada.
+
 Crea y asigna 10 nuevas unidades del token, a la cuenta de token asociada creada anteriormente y envia la firma de la transacción.
+</summary>
+
+- `spl-token create-token` -> *HBkdfpM4FLabw5Xp5qCE9cYqbS5yyV4uHqoDmPpRdEhr*
+
+- `spl-token create-account HBkdfpM4FLabw5Xp5qCE9cYqbS5yyV4uHqoDmPpRdEhr` -> *5NumnxJdX78t7SLsS9fM6jwX2auaP96AoXXzcMSBbBbW*
+
+- `spl-token mint HBkdfpM4FLabw5Xp5qCE9cYqbS5yyV4uHqoDmPpRdEhr 10 -- 5NumnxJdX78t7SLsS9fM6jwX2auaP96AoXXzcMSBbBbW` -> *2QVPd7AQZvVJbFe6tq9kbdQi2Lgtav7zVXYooLdkF7a1kFxeZB2nAG1pmHra8TnhMNSaMcd7uQ96mkJmXE48EkQv*
+
+
+</details>
+<details><summary>
+Crea un nuevo proyecto de Anchor en Solana Playground y escribe el contexto de una instrucción que crea un nuevo token donde el mint authority es una cuenta diferente definida también dentro del contexto de la instrucción y comparte el link al proyecto.
+</summary>
+
+- Código básico:
+```rust
+use anchor_lang::prelude::*;
+use anchor_spl::token::*;
+
+declare_id!("EgVw1Bjs5z8R6XwRrpbYFt8wGXZYAztGxbhKCPXcynj6");
+
+//2. Crear programa y instrucción
+#[program]
+pub mod token_exercise {
+    use super::*;
+
+    pub fn create_token_mint(_ctx: Context<CreateToken>) -> Result<()>{
+        Ok(())
+    }
+}
+
+//1. Crear contexto
+#[derive(Accounts)]
+pub struct CreateToken<'info>{
+
+    //cuenta 'mint account'
+    #[account(init, payer = fee_payer, mint::decimals = 9, mint::authority = mint_authority)]
+    pub mint_account: Account<'info, Mint>,
+
+    //cuentas mutables
+    #[account(mut)]
+    pub mint_authority: Signer<'info>,
+    #[account(mut)]
+    pub fee_payer: Signer<'info>,
+
+    //cuentas programa
+    pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
+
+    //cuentas asociadas
+    pub rent: Sysvar<'info, Rent>,
+}
+```
+- Código mejorado IA(Chat-GPT):
+```rs
+use anchor_lang::prelude::*;
+use anchor_spl::token::*;
+
+declare_id!("EgVw1Bjs5z8R6XwRrpbYFt8wGXZYAztGxbhKCPXcynj6");
+
+//2. Crear programa y instrucción
+#[program]
+pub mod token_exercise {
+    use super::*;
+
+    pub fn create_token_mint(_ctx: Context<CreateToken>) -> Result<()>{
+        Ok(())
+    }
+}
+
+//1. Crear contexto
+#[derive(Accounts)]
+pub struct CreateToken<'info>{
+    //cuentas mutables 💡 -> segun GPT, es mejor declarar primero la autoridad que se utiliza en mint_account
+    #[account(mut)]
+    pub mint_authority: Signer<'info>,
+   
+
+    //cuenta 'mint account'
+    #[account(
+        init, 
+        payer = fee_payer, 
+        mint::decimals = 9, 
+        mint::authority = mint_authority,
+        mint::token_program = token_program //segun GPT, es buena practica indicar siempre el token_program
+        )]
+    pub mint_account: Account<'info, Mint>,
+
+    #[account(mut)]
+    pub fee_payer: Signer<'info>,
+
+    //cuentas programa
+    pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
+
+    //cuentas asociadas
+    pub rent: Sysvar<'info, Rent>,
+}
+```
+
+    ❓⁉️ Chat-GPT said ⁉️ 📢⁉️
+
+    - `mint_authority` debe ir antes porque es un valor lógico dentro de `mint_account`.  
+    - `fee_payer` y `token_program` pueden ir después porque Anchor ya sabe resolverlos.  
+ 
+
+
+</details>
+
+
+
+### x. 
+<details><summary>
+
 </summary>
 
 
 
 </details>
 <details><summary>
-Crea un nuevo proyecto de Anchor en Solana Playground y escribe el contexto de una instrucción que crea un nuevo token donde el mint authority es una cuenta diferente definida también dentro del contexto de la instrucción y comparte el link al proyecto.
+
 </summary>
 
 
