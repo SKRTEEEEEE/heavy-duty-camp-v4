@@ -350,12 +350,216 @@ pub struct CreateToken<'info>{
 
     - `mint_authority` debe ir antes porque es un valor lógico dentro de `mint_account`.  
     - `fee_payer` y `token_program` pueden ir después porque Anchor ya sabe resolverlos.  
- 
-
 
 </details>
 
 
+
+### 4. Trabajando con PDAs
+
+
+<details><summary>
+Crea un nuevo proyecto en Solana Playground y dentro del archivo client.ts, utiliza la función findProgramAddressSync para encontrar la PDA y el bump canónico para los siguientes valores:
+
+programId: "11111111111111111111111111111111"
+
+Seeds: [“heavy”, “duty”, “camp”, 4]
+</summary>
+
+- Encontrar PDA and bump canónico
+```ts
+const [PDA, bump] = PublicKey.findProgramAddressSync(
+  [
+    Buffer.from("heavy"),
+    Buffer.from("duty"),
+    Buffer.from("camp"),
+    Buffer.from([4])],
+  new PublicKey("11111111111111111111111111111111")
+)
+console.log(`PDA: ${PDA}, bump: ${bump}`)
+```
+
+</details>
+<details><summary>
+En el mismo proyecto, define el contexto y la instrucción de un programa para crear una cuenta que almacena un número entero y una public key, dentro de una PDA y utiliza como semilla para generar la dirección de la PDA únicamente la public key almacenada en la cuenta.
+
+En el mismo proyecto, define el contexto y la instrucción de un programa para modificar los datos de la cuenta creada anteriormente.
+</summary>
+
+- Código:
+```rs
+use anchor_lang::prelude::*;
+
+
+declare_id!("5NLnnWgZbiBz8GRFQbHMPJNWPD9G6ddks66iFQHSecsE");
+
+//3. Programa con las instrucciones para crear y modificar
+#[program]
+pub mod contador_pda_mejorado{
+    pub use super::*;
+
+    pub fn crear_contador(ctx: Context<CrearContador>)->Result<()>{
+        ctx.accounts.cuenta_pda.valor = 0;
+        ctx.accounts.cuenta_pda.llave = ctx.accounts.fee_payer.key();
+        ctx.accounts.cuenta_pda.bump = ctx.bumps.cuenta_pda; //ctx.bumps.get("cuenta_pda").unwrap()
+        Ok(())
+    }
+
+    pub fn modificar_contador(ctx:Context<ModContador>, nuevo_valor: u64) ->Result<()>{
+        ctx.accounts.cuenta_pda.valor = nuevo_valor;
+        Ok(())
+    }
+}
+
+//4. Contexto de la instrucción modificar contador
+#[derive(Accounts)]
+pub struct ModContador<'info> {
+    #[account(
+        mut,
+        seeds=[fee_payer.key().as_ref()],
+        bump = cuenta_pda.bump,
+        constraint = cuenta_pda.llave == fee_payer.key(), // Esto es una condicion que le ponemos para que anchor nos cree la cuenta
+    )]
+    cuenta_pda: Account<'info, Contador>,
+
+    #[account(mut)]
+    fee_payer: Signer<'info>,
+}
+
+//2. Contexto de la instrucción crear contador
+#[derive(Accounts)]
+pub struct CrearContador<'info> {
+    #[account(
+        init,
+        payer=fee_payer,
+        space=8+Contador::INIT_SPACE,
+        seeds=[
+            fee_payer.key().as_ref()
+        ],
+        bump,
+    )]
+    cuenta_pda: Account<'info, Contador>,
+
+    #[account(mut)]
+    fee_payer: Signer<'info>, //? deben ser publicos los campos?
+
+    pub system_program: Program<'info, System>
+}
+
+#[account]
+#[derive(InitSpace)]
+//1. Estructura de la cuenta PDA
+pub struct Contador {
+    pub valor: u64,
+    pub llave: Pubkey,
+    pub bump: u8,
+}
+```
+
+- Test (mocha):
+```ts
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { ContadorPdaMejorado } from "../target/types/contador_pda_mejorado";
+
+describe("contador-pda-mejorado", () => {
+  const provider = anchor.AnchorProvider.env();
+  anchor.setProvider(provider);
+
+  const program = anchor.workspace.ContadorPdaMejorado as Program<ContadorPdaMejorado>;
+  const wallet = provider.wallet.publicKey;
+
+  it("Inicializa el contador", async () => {
+    // Mostrar información del cliente
+    console.log("Mi dirección:", wallet.toString());
+    const balance = await provider.connection.getBalance(wallet);
+    console.log(`Mi balance: ${balance / LAMPORTS_PER_SOL} SOL`);
+
+    // Encontrar PDA
+    const [pda, bump] = PublicKey.findProgramAddressSync(
+      [wallet.toBuffer()],
+      program.programId
+    );
+    console.log(`PDA: ${pda.toString()}, bump: ${bump}`);
+
+    // Crear contador
+    try {
+      await program.methods
+        .crearContador()
+        .accounts({
+          cuentaPda: pda,
+          feePayer: wallet,
+          systemProgram: SystemProgram.programId
+        })
+        .rpc();
+      
+      console.log("Contador creado exitosamente");
+
+      // Verificar el valor inicial
+      const cuenta = await program.account.contador.fetch(pda);
+      console.log("Valor inicial:", cuenta.valor.toString());
+      console.log("Llave almacenada:", cuenta.llave.toString());
+      console.log("Bump almacenado:", cuenta.bump);
+
+    } catch (error) {
+      console.error("Error al crear el contador:", error);
+    }
+  });
+
+  it("Modifica el contador", async () => {
+    // Encontrar PDA
+    const [pda, _] = PublicKey.findProgramAddressSync(
+      [wallet.toBuffer()],
+      program.programId
+    );
+
+    // Modificar contador
+    try {
+      const nuevoValor = new anchor.BN(42);
+      await program.methods
+        .modificarContador(nuevoValor)
+        .accounts({
+          cuentaPda: pda,
+          feePayer: wallet
+        })
+        .rpc();
+
+      console.log("Contador modificado exitosamente");
+
+      // Verificar el nuevo valor
+      const cuenta = await program.account.contador.fetch(pda);
+      console.log("Nuevo valor:", cuenta.valor.toString());
+
+    } catch (error) {
+      console.error("Error al modificar el contador:", error);
+    }
+  });
+});
+```
+
+### x. 
+<details><summary>
+
+</summary>
+
+
+
+</details>
+<details><summary>
+
+</summary>
+
+
+
+</details>
+<details><summary>
+
+</summary>
+
+
+
+</details>
 
 ### x. 
 <details><summary>

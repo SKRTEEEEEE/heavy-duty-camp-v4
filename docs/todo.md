@@ -273,6 +273,32 @@ npm install --save @solana/web3.js@1
 npm i --save-dev @types/node
 ```
 Luego, añadir en el compilerOptions, del archivo tsconfig.json. Types: "node", Lib: "exnext" y "dom".
+##### Interactuando con PDAs en [solpg.io](https://beta.solpg.io/)
+Para poder interactuar con nuestro programa y llamar a la instrucción que modifica la PDA debemos tener en cuenta lo siguiente:
+- La cuenta PDA debe ser calculada por nosotros. Para ello podemos ejecutar el siguiente código en el cliente
+
+    ```ts
+    // todas las semillas que se requieran
+    const programId = new PublicKey("DZ3rUvPXHzD7TwVwECwC9186997jNFnVEPhb5jL8E9Zg"); //programId, este es el que aparece en el contrato de Rust dentro de declareId!("")
+    const auth = new PublicKey("GQAJyEhWNdyN3hLDN659aU5y5jiBU27BS8Acb6iYkrRV"); //authority, en este caso es la cuenta pagadora
+    const [PDA, bump] = PublicKey.findProgramAddressSync(
+    [Buffer.from("contador"),auth.toBuffer()], //El ORDEN DE LAS SEMILLAS IMPORTA!DEBE SER EL MISMO
+    programId //el programId no es el systemProgram
+    );
+    console.log("PDA: ", PDA.toBase58());
+    ```
+
+- También podemos crear la semilla dentro de la sección de Test de [solpg.io](https://beta.solpg.io/), para ello debemos clickar en el input de la PDA y seleccionar la opción `from seed`. Una vez clickemos, debemos indicar las semillas si las hay.
+
+- ALGO INTERESANTE: Una vez que se ha creado una cuenta PDA (Program Derived Address) con la instrucción crear_contador, no puedes volver a llamar a esa misma instrucción para crearla otra vez. Esto se debe a que la PDA está determinada por las semillas y el bump generado, y su dirección es única.
+
+    Razones:
+
+    - La PDA es derivada de las semillas: Las semillas y el bump hacen que la PDA sea determinística. Una vez que se genera la PDA con ciertas semillas, esta dirección no cambia. Si intentas crearla de nuevo, las semillas (y probablemente el bump) serán iguales, por lo que el sistema reconocerá que ya existe.
+
+    - La cuenta PDA es única y no puede ser creada más de una vez: Estas semillas siempre derivarán la misma dirección, y como la cuenta ya existe, Anchor y el sistema de Solana no permitirán que se cree una segunda vez.
+
+    - Error en el intento de re-creación: Si intentas volver a ejecutar crear_contador para una PDA que ya existe, obtendrás un error indicando que la cuenta ya está inicializada o que la PDA ya existe.
 
 
 
