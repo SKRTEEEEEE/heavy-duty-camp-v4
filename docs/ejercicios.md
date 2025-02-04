@@ -238,21 +238,7 @@ pub enum CustomError {
 ```
 </details>
 
-
-
-
-
-
-
-
-
-
-
-
----
-
 ### 3. Interactuando con el Token Program
-
 
 <details><summary>
 Utilizando el CLI en Solana Playground, crea un nuevo token y envia la Public Key del token.

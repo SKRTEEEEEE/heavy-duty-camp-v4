@@ -1,49 +1,54 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::*; //importamos todo lo relacionado con el mint account
-use anchor_spl::associated_token::*; //importamos todo lo relacionado con el token account
 
-/*
-- No es necesario crear una estructura de la cuenta especifica, ya que esta nos la facilita la libreria
-*/
-
-declare_id!("7umLstBrAY48SbsRCdqVMqLvREDCZtY67dxHdNfs87Kg");
-
+declare_id!("DZ3rUvPXHzD7TwVwECwC9186997jNFnVEPhb5jL8E9Zg");
+// 3. crear programa
 #[program]
-pub mod tokens {
+pub mod contador_pda {
+    pub use super::*;
 
-    use super::*; // tiene acceso a lo que declaremos fuera del módulo
-
-    //5. Crear funciones
-    pub fn create_token_mint(_ctx: Context<CreateToken>) -> Result<()>{ //Al indicar _ctx, hacemos que ctx sea una variable inusada
-        //anchor se ocupa de ?definir la logica?
+    pub fn crear_contador(ctx: Context<CrearContador>) -> Result<()>{
+        //Iniciar el valor de la cuenta en 0
+        ctx.accounts.contador.valor = 0;
+        //almacenamos las semillas necesarias para la PDA(pub key del authority y bump)
+        ctx.accounts.contador.autoridad = ctx.accounts.authority.key(); //pubkey del authority
+        //almacenar el bump
+        ctx.accounts.contador.bump = ctx.bumps.contador; 
         Ok(())
     }
+} 
 
-
-}
-
-//1. Crear contexto de la instrucción de crear un token
+// 2. contexto de la instrucción crear contador
 #[derive(Accounts)]
-pub struct CreateToken<'info>{
-    //2. Definir cuentas
-    #[account(init, payer=authority, mint::decimals = 2, mint::authority = authority)]
-    pub mint_account: Account<'info, Mint>, //Mint viene de anchor_spl::token, y nos trae toda la structura para una cuenta mint
-    //6. Definimos cuenta para `token account`
-    #[account(init_if_needed, payer = authority, associated_token::mint = mint, associated_token::authority = authority)] //init_if_needed -> inicia la cuenta si todavia no se ha iniciado antes
-    pub token_account: Account<'info, TokenAccount>,
-
+pub struct CrearContador<'info> {
+    //3. cuentas
+    #[account(
+        init,
+        payer = authority,
+        space = 8 + Contador::INIT_SPACE,
+        //hasta aqui una cuenta 'normal'
+        //PDA -> requiere semillas:
+        seeds = [ //arreglo de semillas para la PDA
+            Contador::SEMILLA_CONTADOR.as_bytes(), //semilla opcional string
+            authority.key().as_ref() //semilla opcional public key
+        ],
+        bump, //este sera el bump canónico de la PDA
+    )]
+    contador: Account<'info, Contador>,
 
     #[account(mut)]
-    pub authority: Signer<'info>, //Cuenta para almacenar la autoridad
-
-    //3. Definir programas asociados para ejecutar la instrucción
-    pub system_program: Program<'info, System>, 
-    pub token_program: Program<'info, Token>, // inicializa el `token mint`
-    //7. Definir programa asociado a `token account`
-    pub associated_token_program: Program<'info, AssociatedToken>,
-
-    //4. Variables asociadas a la instrucción
-    pub rent: Sysvar<'info, Rent>, // Para que anchor sepa cual es el valor actual de la renta, y pueda hacer los calculos vinculados a las fees
-
+    pub authority: Signer<'info>,
+    pub system_program: Program<'info, System>
 }
 
+//1.estructura de la cuenta del contador
+#[account]
+#[derive(InitSpace)]
+pub struct Contador{
+    pub valor: u64,
+    pub autoridad: Pubkey,
+    pub bump: u8,
+}
+// bloque de implementación para la estructura contador:
+impl Contador {
+    pub const SEMILLA_CONTADOR: &'static str = "contador";
+}

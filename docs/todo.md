@@ -176,10 +176,10 @@ Framework de rust, para programas de Solana.
 
 
 #### 📄 Links
-- [macros rust](https://book.rustlang-es.org/ch19-06-macros)
-- [lifetime rust](https://book.rustlang-es.org/ch10-03-lifetime-syntax)
-- [Result rust](https://book.rustlang-es.org/ch09-02-recoverable-errors-with-result)
-- [fn 'functions' rust](https://book.rustlang-es.org/ch03-03-how-functions-work)
+- [macros - rust](https://book.rustlang-es.org/ch19-06-macros)
+- [lifetime - rust](https://book.rustlang-es.org/ch10-03-lifetime-syntax)
+- [Result - rust](https://book.rustlang-es.org/ch09-02-recoverable-errors-with-result)
+- [fn 'functions' - rust](https://book.rustlang-es.org/ch03-03-how-functions-work)
 - [Transacciones y instrucciones](https://solana.com/es/docs/core/transactions)
 
 ### [3. Introducción tokens](./HDC%20v4%20-%20Clase%20#3.pdf)
@@ -230,12 +230,49 @@ Se conoce como 'mint', crea nuevas unidades y las asocia a un `token account`.
 
 #### anchor
 Para poder utilizar la lógica del programa de tokens en anchor, debemos **importar la librería `anchor_spl`**
+#### 📄 Links
+- [Gestion de espacio - anchor](https://www.anchor-lang.com/docs/references/space)
+- [Constraints (init_if_needed) - anchor](https://www.anchor-lang.com/docs/references/account-constraints)
+- [Tokens](https://solana.com/es/docs/core/tokens)
+- [Tipos de las cuentas - anchor](https://www.anchor-lang.com/docs/account-types)
 
+### [4. PDA (Dirección derivada de un programa)](./HDC%20v4%20-%20Clase%20#4.pdf)
+#### Cuenta token asociada 
+Cuenta token con una dirección específica que es generada utilizando algunas entradas, y que siempre genera la misma dirección para las mismas entradas. Esta nos devuelve una dirección derivada de programas (PDA).
+#### PDA (Dirección derivada de programa)
+Derivadas de:
+- combinación de semillas definidas por usuario -> opcionales
+- bump o nonce -> obligatorio
+- identificador de un programa -> obligatorio
+No poseen llaven privada (ninguna entidad puede generar firma válida para PDA)
 
+Generado con hashing, SHA256, pero con un algoritmo distinto al Ed25519 (algoritmo para generar par de llaves, publicKey - privateKey 'válidos'). Por lo tanto, no pueden participar en operaciones criptograficas, ya que no tienen privateKey.
 
+Sirven para almacenar estados, datos, etc... pero con la particularidad que solo pueden ser gestionadas por un programa, sin que ninguna entidad externa pueda intervenir.
 
+Las PDAs permiten programas gestionen recursos sin necesidad humana, crucial para automatizar.
 
+##### Clave Pública del Programa (Program ID)
+Dirección del programa de Solana que desea derivar una PDA.
+##### Semillas (seeds)
+Una o más cadenas de bytes que sirven como identificadores únicos. (texto, numeros, etc..)
+##### Bump Seed
+Un número (0-255) que se ajusta para encontrar unadirección válida que no tenga una clave privada asociada.
 
+- Iterar el bump: Se ajusta desde el mas alta(255) hasta el mas bajo, hasta encontrar una dirección válida
+
+- Bump canónico: Primer bump que deriva una PDA válida. Esto genera seguridad. Debemos asegurar-nos que siempre se usa el bump cánonico.
+
+#### anchor
+Utilizamos la macro `#[account]`, con los mismos atributos que las otras cuentas(init, etc..) y se definen las seeds.
+#### ➕ Extra
+##### Derivando una PDA, en WSL
+Para poder ejecutar el codigo ts en el proyecto iniciado con `anchor init`, hemos de instalar las siguientes dependencias:
+```
+npm install --save @solana/web3.js@1
+npm i --save-dev @types/node
+```
+Luego, añadir en el compilerOptions, del archivo tsconfig.json. Types: "node", Lib: "exnext" y "dom".
 
 
 
