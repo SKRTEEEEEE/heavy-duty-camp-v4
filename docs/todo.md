@@ -300,5 +300,26 @@ Para poder interactuar con nuestro programa y llamar a la instrucción que modif
 
     - Error en el intento de re-creación: Si intentas volver a ejecutar crear_contador para una PDA que ya existe, obtendrás un error indicando que la cuenta ya está inicializada o que la PDA ya existe.
 
+### [5. CPI (Cross-Program Invocations)](./HDC%20v4%20-%20Clase%20#5.pdf)
+Nos permite que nuestro programa llame a instrucciones de otro programa, siempre y cuando viva en la misma red y sepa como se llaman y como invocar dicha instrucción (parecido a las API)
 
+Varia según el tipo de cuentas involucradas: con o sin PDA.
 
+Se pueden invocar instrucciónes continuas, se conoce como **pila de invocación**, y tiene un máximo de 4, haciendo un total de 5 invocaciones.
+
+*Cuando creamos SPL Tokens, estamos invocando una instrucción al system_program (CPI) ❓*
+
+Es crucial verificar los datos a la hora de permitir recibir datos, ya que la SVM no es capaz de validarlos 'previamente'.
+
+*Cuando necesitamos una firma para ejecutar la instrucción, se debe pasar la firma al resto de instrucciones que se llamaran para verificar la autoridad, etc.., pero a la hora de utilizar PDA deberemos enviar las semillas ❓*
+
+#### invoke()
+Para CPI basicas. Cuando no necesitamos utilizar una PDA, transacción tradicional con cuentas que poseen llave privada y pueden firmar la instrucción. Recibe los datos de la instrucción que queremos invocar y las cuentas relacionadas (o firmantes en segun que casos).
+#### invoke_signed()
+Para CPI con PDA. La misma estructura, pero debemos enviar tambien las semillas.
+#### anchor
+Para utilizar las CPI, debemos utilizar el CpiContext de anchor si es posible para nuestro proyecto. Sino deberemos utilizar las funciones 'nativas'.
+
+Recibe dos parametros, (para las CPI básicas): el id del programa que vamos a invocar y la instrucción del programa que vamos a invocar.
+
+Para CPI con PDA, necesitamos utilizar el metodo .with_signer(), pasandole las semillas.
