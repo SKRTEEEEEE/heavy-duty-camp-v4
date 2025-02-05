@@ -538,9 +538,9 @@ describe("contador-pda-mejorado", () => {
 });
 ```
 
-### x. 
+### 5.  
 <details><summary>
-
+Crea un nuevo proyecto en Solana Playground y escribe el código completo de una instrucción que realice una transferencia de tokens SPL entre dos cuentas, en donde la cuenta remitente es una PDA con dos semillas opcionales cualesquiera. Debes realizar un Cross-Program Invocation (CPI) al Token Program de Solana.
 </summary>
 
 
