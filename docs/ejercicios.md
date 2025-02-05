@@ -538,24 +538,67 @@ describe("contador-pda-mejorado", () => {
 });
 ```
 
-### 5.  
+</details>
+
+### 5. CPIs
 <details><summary>
 Crea un nuevo proyecto en Solana Playground y escribe el código completo de una instrucción que realice una transferencia de tokens SPL entre dos cuentas, en donde la cuenta remitente es una PDA con dos semillas opcionales cualesquiera. Debes realizar un Cross-Program Invocation (CPI) al Token Program de Solana.
 </summary>
 
+- Código parte 1:
+```rs
+use anchor_lang::prelude::*;
+declare_id!("639DEktgoBuJJaEbFEr7RcRHNFHM82aKdJTt4YqqTudm");
+
+//4. Programa con las instrucciones
+#[program]
+pub mod pda_transfer{
+    use super::*;
+    pub fn almacenar_mint(ctx: Context<AlmacenarMint>, input_mint_account: Pubkey)->Result<()>{
+        ctx.accounts.mint_account.mint_token = input_mint_account;
+        ctx.accounts.mint_account.bump = ctx.bumps.mint_account;
+        ctx.accounts.mint_account.fee_payer = ctx.accounts.fee_payer.key();
+        Ok(())
+    }
+}
+//5. Contexto de la instrucción para transferir tokens
+// #[derive(Accounts)]
 
 
-</details>
-<details><summary>
+//2. Contexto de la instrucción para almacenar el mint token
+#[derive(Accounts)]
+pub struct AlmacenarMint<'info> {
+    //3. cuentas para almacenar mint?
+    #[account(mut)]
+    pub fee_payer: Signer<'info>,
 
-</summary>
+    #[account(
+        init,
+        seeds = [b"almacenar"],
+        bump,
+        payer = fee_payer,
+        space = 8 + DataAccount::INIT_SPACE
+    )]
+    pub mint_account: Account<'info, DataAccount>,
+    pub system_program: Program<'info, System>
+}
 
+//1. Estructura de datos del mint token (cuenta)
+#[account]
+#[derive(InitSpace)]
+pub struct DataAccount {
+    pub mint_token: Pubkey,
+    pub fee_payer: Pubkey,
+    pub bump: u8,
+}
+```
+- Ejecucción código en 'Test' sección de [solpg.io](solpg.io): Desplegamos el contrato, ahora podemos utilizar la instrucción almacenarMint, la cual nos permitira, crear una cuenta PDA para dicho mint token.
+    - Primero utilizamos el comando `spl-token create-token` para crear una cuenta mint.
+    - Luego, introducimos dicha Pubkey, en el argumento 'inputMintAccount'
+    - El feePayer sera el pagador. (wallet con lamports)
+    - mintAccount, es la cuenta PDA -> generada a partir de: la semilla 'almacenar'
+- Para acceder a DataAccount, debemos facilitar la Pubkey, de la mintAccount (lo generado en la linea anterior de estas instrucciones)
 
-
-</details>
-<details><summary>
-
-</summary>
 
 
 
