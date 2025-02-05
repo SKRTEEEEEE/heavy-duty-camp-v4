@@ -323,3 +323,7 @@ Para utilizar las CPI, debemos utilizar el CpiContext de anchor si es posible pa
 Recibe dos parametros, (para las CPI básicas): el id del programa que vamos a invocar y la instrucción del programa que vamos a invocar.
 
 Para CPI con PDA, necesitamos utilizar el metodo .with_signer(), pasandole las semillas.
+
+
+
+.
