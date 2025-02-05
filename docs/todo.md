@@ -323,3 +323,19 @@ Para utilizar las CPI, debemos utilizar el CpiContext de anchor si es posible pa
 Recibe dos parametros, (para las CPI básicas): el id del programa que vamos a invocar y la instrucción del programa que vamos a invocar.
 
 Para CPI con PDA, necesitamos utilizar el metodo .with_signer(), pasandole las semillas.
+
+### [6. Escrow](./HDC%20v4%20-%20Clase%20#6.pdf)
+Programa para intercambiar tokens SPL entre dos usuarios. 'Red p2p': verifica que los usuarios que intervienen lo ejecutan de forma correcta.
+Primer usuario -> usuario inicilizador, crea una propuesta para intercambiar tokens A por tokens B, que creara una cuenta de garantia, la cual almacenara los tokens A, hasta que otro usuario decida aceptar el cambio.
+- La instrucción 'inicializar': crea una cuenta de escrow, transfiere sus tokens A a una cuenta garantia que esta a cargo del programa(PDA) 
+- La instrucción 'finalización': usuario aceptante acepta, la instrucción transfiere los tokens B a la cuenta del usuario inicializador, y la instruccion tambien transfiere los tokens A de la cuenta garantia a la cuenta del finalizador.
+
+- El usuario inicializador, debe tener ciertos tokens A. Por lo tanto, debe tener una 'token account asociada (ATA)' que relacione el inicializador y la cuenta mint.
+- El usuario aceptante, debe poseer tokens B, por lo tanto debe aver una ATA vinculada al aceptante y al token mint.
+
+- El escrow, debe almacenar datos:
+    - usuario que lo inicia
+    - tokens que se quieren intercambiar(token A y B)
+    - cantidades de cada tokens
+
+- Cuenta de garantia -> PDA, solo el programa tiene acceso, va a ser una cuenta token.

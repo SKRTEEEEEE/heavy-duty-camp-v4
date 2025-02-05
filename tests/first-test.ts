@@ -1,74 +1,109 @@
-import * as anchor from "@coral-xyz/anchor";
-import { Program } from "@coral-xyz/anchor";
-import { Blog } from "../target/types/blog";
-import { assert } from "chai";
+import { PublicKey } from "@solana/web3.js";
+import * as spl from "@solana/spl-token";
+import * as web3 from "@solana/web3.js";
 
-describe("blog", () => {
-  // Configuración del provider
-  const provider = anchor.AnchorProvider.local();
-  anchor.setProvider(provider);
+//PARA SOLPG.IO!!!!!
+describe("Test", () => {
+  //definimos las cuentas que vamos a necesitar
 
-  // Referencia al programa de Anchor
-  const program = anchor.workspace.Blog as Program<Blog>;
+    //tokens
+    let tokenA: PublicKey;
+    let tokenB: PublicKey;
 
-  // Cuentas para el test
-  const mensajeAccount = anchor.web3.Keypair.generate();
+    //cuentas
+    let escrow: PublicKey;
+    let garantia: PublicKey;
 
-  it("Debe crear un mensaje", async () => {
-    // Ejecutamos la instrucción
-    await program.methods
-      .crearMensaje()
-      .accounts({
-        mensajeAccount: mensajeAccount.publicKey,
-        user: provider.wallet.publicKey,
-        systemProgram: anchor.web3.SystemProgram.programId,
-      } as any)
-      .signers([mensajeAccount])
-      .rpc();
+    /*
+    El usuario -inicializador- que es nuestra wallet
+    */
+   let inicializador = pg.wallet.keypair;
+   let inicializadorTokenA: PublicKey;
 
-    // Recuperamos los datos almacenados en la cuenta
-    const mensaje = await program.account.mensaje.fetch(mensajeAccount.publicKey);
+   let id = Date.now().toString();
 
-    console.log("Mensaje almacenado:", mensaje.valor);
+   //creamos todas las cuentas que deben existir previamente
+   before(async()=>{
+    //encontramos una dirección PDA para la cuenta del escrow
+    [escrow] = web3.PublicKey.findProgramAddressSync(
+      [inicializador.publicKey.toBuffer(), Buffer.from(id)],
+      pg.PROGRAM_ID
+    );
+    console.log(`cuenta del escrow: `,escrow.toBase58());
 
-    // Verificamos que el mensaje se creó correctamente
-    assert.equal(mensaje.valor, "Hola Mundo!", "El mensaje no se guardó correctamente");
-    assert.ok(mensaje.owner.equals(provider.wallet.publicKey), "El owner no es correcto");
+    [garantia] = web3.PublicKey.findProgramAddressSync(
+      [escrow.toBuffer()],
+      pg.PROGRAM_ID
+    );
+    console.log(`cuenta de la garantia: `, garantia.toBase58())
+    // creamos el token A
+    tokenA = await spl.createMint(
+      pg.connection, // conexion a solana
+      inicializador, // el que paga los fees
+      inicializador.publicKey, // el mint authority
+      inicializador.publicKey, // el freeza authority
+      2 // decimales del token
+    );
+    console.log("token A: ", tokenA.toBase58());
+
+    // creamos el token B
+    tokenB = await spl.createMint(
+      pg.connection, // conexion a solana
+      inicializador, // el que paga los fees
+      inicializador.publicKey, // el mint authority
+      inicializador.publicKey, // el freeza authority
+      2 // decimales del token
+    );
+    console.log("token B: ", tokenB.toBase58());
+
+     // creamos la cuenta token asociada al inicializador y el token A
+    inicializadorTokenA = await spl.createAssociatedTokenAccount(
+      pg.connection, // conexion a la red
+      inicializador, // paga los fees
+      tokenA, // tokens almacenados en la cuenta
+      inicializador.publicKey // owner de los tokens
+    );
+    console.log("cuenta inicializadorTokenA: ", inicializadorTokenA.toBase58());
+    /*
+    nuestra primera isntrucción transfiere tokens a a la cuenta de garantia
+    el inicializador debe poseer tokens A en su cuenta token asi que
+    hacemos mint de tokens A a la cuenta token asociada al incializador y el token A
+    */
+    await spl.mintTo(
+      pg.connection, // conexion a solana
+      inicializador, // el que paga los fees
+      tokenA, // token a mintear
+      inicializadorTokenA, // donde depositarlos
+      inicializador.publicKey, // mint authority
+      100000 // cantidad a mintear (expresada en decimales)
+    );
   });
+    
+  it("Se inicializa un Escrow", async () => {
+    const cantidadTokenA = new BN(100); // 100 tokens A
+    const cantidadTokenB = new BN(95); // 95 tokens B
 
-  it("Debe modificar un mensaje", async () => {
-    const nuevoMensaje = "Nuevo mensaje de prueba";
-
-    await program.methods
-      .modMensaje(nuevoMensaje)
+    let txHash = await pg.program.methods
+      .incializar(id, cantidadTokenA, cantidadTokenB)
       .accounts({
-        mensajeAccount: mensajeAccount.publicKey,
-        user: provider.wallet.publicKey,
+        escrow: escrow,
+        inicializador: inicializador.publicKey,
+        inicializadorCuentaTokenA: inicializadorTokenA,
+        cuentaDeGarantia: garantia,
+        tokenA: tokenA,
+        tokenB: tokenB,
       })
+      .signers([inicializador])
       .rpc();
 
-    const mensajeModificado = await program.account.mensaje.fetch(mensajeAccount.publicKey);
+      // Confirmamos la transaccion transaction
+      await pg.connection.confirmTransaction(txHash);
+  
 
-    console.log("Mensaje modificado:", mensajeModificado.valor);
+     // verificamos que se haya depositado la cantidad en la cuenta de garantía
+    let deposito = (await spl.getAccount(pg.connection, garantia)).amount;
 
-    assert.equal(mensajeModificado.valor, nuevoMensaje, "El mensaje no se modificó correctamente");
-  });
-
-  it("Debe fallar si otro usuario intenta modificar el mensaje", async () => {
-    const otroUsuario = anchor.web3.Keypair.generate();
-
-    try {
-      await program.methods
-        .modMensaje("Modificación no permitida")
-        .accounts({
-          mensajeAccount: mensajeAccount.publicKey,
-          user: otroUsuario.publicKey,
-        })
-        .signers([otroUsuario])
-        .rpc();
-      assert.fail("Debería haber fallado");
-    } catch (err) {
-      assert.include(err.message, "Only the owner can modify the message", "El error no es el esperado");
-    }
-  });
+    // assert
+    assert.equal(cantidadTokenA.toNumber() * 10 ** 2, Number(deposito));
+  })
 });
