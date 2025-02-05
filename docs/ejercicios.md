@@ -600,32 +600,13 @@ pub struct DataAccount {
 - Para acceder a DataAccount, debemos facilitar la Pubkey, de la mintAccount (lo generado en la linea anterior de estas instrucciones)
 
 
-
-
 </details>
 
-### x. 
-<details><summary>
+### 6. Extendiendo el Programa Escrow
 
-</summary>
+[Partiendo del programa escrow visto en clase y disponible en https://beta.solpg.io/679c0c22cffcf4b13384d5ee , escribe una instrucción para cancelar un escrow, en la que los tokens almacenados en la cuenta de garantía se devuelven al usuario inicializador y se realizan los cierres de cuentas correspondientes.](../programs/first-test/src/ej6.rs) 
 
-
-
-</details>
-<details><summary>
-
-</summary>
-
-
-
-</details>
-<details><summary>
-
-</summary>
-
-
-
-</details>
+[Escribe un test en typescript para la instrucción anterior](../tests/test-6.ts)
 
 ### x. 
 <details><summary>
