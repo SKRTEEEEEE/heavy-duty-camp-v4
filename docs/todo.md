@@ -342,3 +342,5 @@ Primer usuario -> usuario inicilizador, crea una propuesta para intercambiar tok
     - cantidades de cada tokens
 
 - Cuenta de garantia -> PDA, solo el programa tiene acceso, va a ser una cuenta token.
+
+### 7. Proyecto final -> [Manejador de eventos](../manejador-eventos/README.md)
