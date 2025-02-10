@@ -734,9 +734,9 @@ pub struct DataAccount {
 
 ### 6. Extendiendo el Programa Escrow
 
-[Partiendo del programa escrow visto en clase y disponible en https://beta.solpg.io/679c0c22cffcf4b13384d5ee , escribe una instrucción para cancelar un escrow, en la que los tokens almacenados en la cuenta de garantía se devuelven al usuario inicializador y se realizan los cierres de cuentas correspondientes.](../programs/first-test/src/ej6.rs) 
+[Partiendo del programa escrow visto en clase y disponible en https://beta.solpg.io/679c0c22cffcf4b13384d5ee , escribe una instrucción para cancelar un escrow, en la que los tokens almacenados en la cuenta de garantía se devuelven al usuario inicializador y se realizan los cierres de cuentas correspondientes.](../ej-6/programs/ej-6/src/lib.rs) 
 
-[Escribe un test en typescript para la instrucción anterior](../tests/test-6.ts)
+[Escribe un test en typescript para la instrucción anterior](../ej-6/tests/ej-6.ts)
 
 ### x. 
 <details><summary>
