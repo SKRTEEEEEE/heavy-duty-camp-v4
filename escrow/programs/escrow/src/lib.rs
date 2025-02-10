@@ -11,7 +11,7 @@ use anchor_spl::token::*;
 
 
 // declare_id!("H7xXLvqYyyJ25NDEAL5tYFrs4nBC2EYAGfiMQKf2PQjR");
-declare_id!("F91W41D8Uqo18YHYHdULhaPETcbsxNHTHMHxYdmXga85");
+declare_id!("AwgKKrojMXaPZYcvYq8YSrJhRE6oqfgghbEo2nADypR7");
 
 #[program]
 pub mod intercambiador_token_spl {

@@ -31,18 +31,22 @@ cd escrow
 ```bash
 anchor build
 ```
+- Para poder compilar el programa, deberemos configurar anchor en la version 0.29.0. Para ello, antes de crear el proyecto, deberemos utilizar el comando `avm use 0.29.0`. Una vez cambiado a la version, podremos iniciar el proyecto. 
+Luego, **si estamos iniciando un nuevo proyecto**, en el archivo, `Cargo.toml`, añadir en dependencias, `anchor-spl: "0.29.0"`
+- Para poder compilar el programa, deberemos probablemente adaptar el archivo `Cargo.lock` a la version requerida (probablemente 3).
 
-### 4. Desplegar en Solana Devnet
+
+### 4. Desplegar en Solana 
 ```bash
-solana config set --url devnet
 anchor deploy
 ```
 
 ### 5. Ejecutar Pruebas
+**TENGO UN ERROR**
 ```bash
 anchor test
 ```
-
+##### ⬇️ TERMINAR
 ## Uso del Programa
 El programa permite dos acciones principales:
 
