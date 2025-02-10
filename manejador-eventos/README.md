@@ -1,5 +1,8 @@
 # Manejador de eventos
 ## Introducción
+Proyecto final del curso de Heavy Duty Camp, Primeros pasos en Solana con Rust.
+
+Consiste en elaborar un manejador de eventos descentralizados.
 ### Resumen
 Manejador de eventos descentralizado. Permite:
 - Crear eventos

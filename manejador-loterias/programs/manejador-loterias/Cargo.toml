@@ -1,12 +1,12 @@
 [package]
-name = "manejador-eventos"
+name = "manejador-loterias"
 version = "0.1.0"
 description = "Created with Anchor"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "manejador_eventos"
+name = "manejador_loterias"
 
 [features]
 default = []
@@ -17,5 +17,4 @@ no-log-ix-name = []
 idl-build = ["anchor-lang/idl-build"]
 
 [dependencies]
-anchor-lang = "0.29"
-anchor-spl = "0.29"
+anchor-lang = "0.30.1"
