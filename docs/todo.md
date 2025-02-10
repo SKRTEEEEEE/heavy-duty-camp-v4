@@ -45,10 +45,13 @@ _para ejecutar pruebas en tu maquina local, sin interaccion con las redes desple
 _para iniciar un nuevo proyecto, hemos de entender que este se ha de ejecutar en la WSL (Ubuntu), por lo tanto, o apuntamos a la carpeta del sistema principal (Windows) donde lo vamos a crear, o lo creamos en la WSL._
 - base template: `anchor init <nombre_proyecto>`
 ##### build
+**Obtener llave publica programa**
+
 _para construir nuestro contrato, debemos: Utilizar una clave pública de ejemplo temporal._
 - obtener clave pública de ejemplo: `solana-keygen pubkey ~/my_keypair.json`
     - generar clave pública de ejemplo: `solana-keygen new --outfile ~/my_keypair.json`
 
+**Utilizar llave publica programa**
 _debemos utilizar esta clave a la hora de declarar nuestro id del programa_
 ```rust
 use anchor_lang::prelude::*;
@@ -69,7 +72,7 @@ declare_id!("<AQUI_IRA_LA_CLAVE_PUBLICA_DE_EJEMPLO>");
         Caused by:
         lock file version 4 requires `-Znext-lockfile-bump
     
-    _podemos cambiar la version de nuestro archivo `Cargo.toml` [(toda la info, aquí)](https://github.com/coral-xyz/anchor/issues/3392):_
+    _podemos cambiar la version de nuestro archivo `Cargo.lock` [(toda la info, aquí)](https://github.com/coral-xyz/anchor/issues/3392):_
 
         version = 3
 ##### deploy

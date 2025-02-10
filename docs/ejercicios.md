@@ -730,13 +730,32 @@ pub struct DataAccount {
 }
 ```
 
+- Test en [solpg.io](beta.solpg.io):
+Para utilizar las instrucciones del programa a traves de [solpg.io](beta.solpg.io), debemos introducir los siguientes campos para llamar a las instrucciones.
+Para ello, deberemos crear una cuenta mint_account y una cuenta token_account vinculada a la mint_account anterior.
+    - mint:
+        - supply: cantidad de tokens a hacer mint (max_supply - total)
+        - feePayer: Pubkey de cuenta con Lamports
+        - mintAccountPda: Pubkey PDA -> semillas: 'almacenar' + Pubkey 'mint_acoount'
+        - tokenAccountPdaRemitente: Pubkey PDA -> semillas: 'mint' + Pubkey 'mint_account'
+        - mintAccount: Pubkey de la cuenta mint creada previamente
+    - transferir: 
+        - quantity: cantidad de tokens a transferir (debe aver supply disponible)
+        - feePayer: Pubkey de la cuenta con Lamports utilizada para hacer el mint
+        - mintAccount: Pubkey de la cuenta mint creada previamente
+        - mintAccountPda: Pubkey PDA -> semillas: 'almacenar' + Pubkey 'mint_acoount'
+        - tokenAccountPdaRemitente: Pubkey PDA -> semillas: 'mint' + Pubkey 'mint_account'
+    - Data Account: 
+        - address: Pubkey PDA 'mintAccountPDA' -> semillas: 'almacenar' + Pubkey 'mint_acoount'
+
+
 </details>
 
 ### 6. Extendiendo el Programa Escrow
 
-[Partiendo del programa escrow visto en clase y disponible en https://beta.solpg.io/679c0c22cffcf4b13384d5ee , escribe una instrucción para cancelar un escrow, en la que los tokens almacenados en la cuenta de garantía se devuelven al usuario inicializador y se realizan los cierres de cuentas correspondientes.](../ej-6/programs/ej-6/src/lib.rs) 
+[Partiendo del programa escrow visto en clase y disponible en https://beta.solpg.io/679c0c22cffcf4b13384d5ee , escribe una instrucción para cancelar un escrow, en la que los tokens almacenados en la cuenta de garantía se devuelven al usuario inicializador y se realizan los cierres de cuentas correspondientes.](../escrow/programs/escrow/src/lib.rs) 
 
-[Escribe un test en typescript para la instrucción anterior](../ej-6/tests/ej-6.ts)
+[Escribe un test en typescript para la instrucción anterior](../escrow/tests/escrow.ts)
 
 ### x. 
 <details><summary>
