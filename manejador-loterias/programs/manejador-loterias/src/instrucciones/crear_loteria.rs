@@ -8,6 +8,7 @@ pub fn crear_loteria(
     nombre: String,
     descripcion: String,
     precio_token: f64,
+    tipo_loteria: f64,
 ) -> Result<()> {
     ctx.accounts.loteria.id = id;
     ctx.accounts.loteria.nombre = nombre;
@@ -18,6 +19,9 @@ pub fn crear_loteria(
 
     ctx.accounts.loteria.activo = true;
     ctx.accounts.loteria.tokens_vendidos = 0;
+
+    // Asignar el valor de la lotería
+    ctx.accounts.loteria.tipo_loteria = TipoLoteria::from_u64(tipo_loteria as u64);
 
     ctx.accounts.loteria.autoridad = ctx.accounts.autoridad.key();
     ctx.accounts.loteria.token_aceptado = ctx.accounts.token_aceptado.key();

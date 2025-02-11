@@ -63,14 +63,13 @@ Se escojera un numero aleatoriamente entre todos los boletos. El reintegro se re
             2. Se entragara dicho valor en la moneda apostada.
         
 
-    
 ### Instrucciones
-- Crear un evento
-- Eliminar un evento
+- Crear una loteria
+- Eliminar loteria
+- Finalizar un evento ❓ Parar loteria -> Crearemos esta funcion como medida de seguridad,🧠 en el futuro se puede crear una instruccion que permita retirar fondos del evento si el evento esta parado
 - Comprar tokens del evento (sponsor) ⚠️
 - Comprar boletos
 - Retirar fondos del evento ❌/⚠️
-- Finalizar un evento ❌❓
 - Retirar ganancias del evento 
 
 #### Funciones diferentes a las instrucciones (auto ejecutables❓) 

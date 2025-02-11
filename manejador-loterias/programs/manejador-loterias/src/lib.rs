@@ -18,8 +18,9 @@ mod manejador_loterias {
         nombre: String,
         descripcion: String,
         precio_token: f64,
+        tipo_loteria: f64,
     ) -> Result<()> {
-        instrucciones::crear_loteria(ctx, id, nombre, descripcion, precio_token)?;
+        instrucciones::crear_loteria(ctx, id, nombre, descripcion, precio_token, tipo_loteria)?;
         Ok(())
     }
 }
