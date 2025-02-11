@@ -87,6 +87,29 @@ describe("Test", () => {
     // comprobamos que el precio del token sea correcto (y esta expresado en la unidad minima del token)
     assert.equal(infoEvento.precioToken.toNumber(), precioToken * 10 ** 2);
   });
+  it("Finaliza un evento", async () => {
+    // llamamo a la instrucción eliminar
+    const tx = await pg.program.methods
+      .finalizarEvento()
+      // enviamos las cuentas asociadas a la instrucción
+      .accounts({
+        evento: evento,
+        autoridad: autoridad.publicKey,
+      })
+      // firma la autoridad creadora del evento
+      .signers([autoridad])
+      // enviamos a la red
+      .rpc();
+
+    //Confirmamos la transaccion
+    await pg.connection.confirmTransaction(tx);
+
+    //Podemos ver la informacion almacenada en la cuenta del evento
+    // en este caso debe ser null porque no debe existir
+    const infoEvento = await pg.program.account.evento.fetchNullable(evento);
+
+    console.log("Evento activo: ", infoEvento.activo);
+  });
   it("Elimina el evento creado anteriormente", async () => {
     // comprobaciones previas
     console.log("eliminando evento...");
@@ -124,3 +147,4 @@ describe("Test", () => {
     console.log("Información del evento: ", infoEvento);
   });
 });
+

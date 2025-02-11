@@ -30,5 +30,9 @@ mod manejador_eventos {
         instrucciones::eliminar_evento(ctx)?;
         Ok(())
     }
+    pub fn finalizar_evento(ctx: Context<FinalizarEvento>) -> Result<()> {
+        instrucciones::finalizar_evento(ctx)?;
+        Ok(())
+    }
 }
 
