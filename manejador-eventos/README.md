@@ -34,3 +34,7 @@ Nombre, identificador, descripcion, precio token evento, precio entradas
 - Boveda del evento
 - Boveda de ganancias
 
+#### Eliminar un evento
+Elimina un evento, al hacer esto estamos eliminando todas las cuentas asociadas, como el mint_account del token, las token_account de los usuarios, etc...
+#### Finalizar un evento
+Desactiva un evento, cambiando el atributo 'activo' de la struct `Evento`
