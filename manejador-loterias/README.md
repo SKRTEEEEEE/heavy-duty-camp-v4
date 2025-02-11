@@ -54,11 +54,11 @@ Se escojera un numero aleatoriamente entre todos los boletos. El reintegro se re
 - **Normal y grande:** 1 premio principal + 9 premios secundarios(reintegro)
     - Ganador principal: 0'60^ de lo recaudado + 1 premio secundario-> *10USDT * 99 = 990 * 0.60^ = 600USDT, lo mismo para cualquier moneda*
     - Premio secundario: ~ valor 2x lo apostado -> *1SOL * 2 * <precio_actual>200usdc = valor:400usdc*
-        - Si el valor supera los $40, se entregara el valor en una de estas opciones, por orden de preferencia -> 
+        - Si el valor supera los $40, se entregara el valor en una de estas opciones, por orden de posibilidad -> 
             1. Se enviara un regalo fisico valorado aproximadamente en el valor del premio secundario. 
             2. Se entragara dicho valor en distintas monedas del ecosistema.
             3. Se entragara dicho valor en la moneda apostada.
-        - Si el valor no supera los $40, se entregara el valor en una de estas opciones, por orden de preferencia ->
+        - Si el valor no supera los $40, se entregara el valor en una de estas opciones, por orden de posibilidad ->
             1. Se entragara dicho valor en distintas monedas del ecosistema.
             2. Se entragara dicho valor en la moneda apostada.
         
@@ -67,23 +67,44 @@ Se escojera un numero aleatoriamente entre todos los boletos. El reintegro se re
 - Crear una loteria
 - Eliminar loteria
 - Finalizar un evento ❓ Parar loteria -> Crearemos esta funcion como medida de seguridad,🧠 en el futuro se puede crear una instruccion que permita retirar fondos del evento si el evento esta parado
+🏗️⬇️
 - Comprar tokens del evento (sponsor) ⚠️
 - Comprar boletos
 - Retirar fondos del evento ❌/⚠️
 - Retirar ganancias del evento 
 
-#### Funciones diferentes a las instrucciones (auto ejecutables❓) 
+#### Funciones diferentes a las instrucciones (auto ejecutables❓) 🏗️
 Se ejecutara automaticamente al vender-se los boletos.
 - Finalizar un evento
 - Traspasar premio principal
 - Traspasar fondos a 'boveda de ganancias'
 
 
-#### Crear un evento
+#### Crear una lotería
+Instrucción para crear las cuentas necesarias, asi como almacenar toda la informacion necesaria.
 ##### Información
-Nombre, identificador, descripcion, precio token evento, precio entradas
+- **Loteria**: Nombre (40), id(16), descripcion(150), precio token(u64), activo(bool), token_aceptado(pubkey), autoridad(pubkey), bump-s('varios'), tipo_loteria(TipoLoteria)
+- **TipoLoteria**: ENUM -> Fast(9), Normal(99), Big(999)
 ##### Cuentas PDA
 - Token del evento
-- Boveda del evento
-- Boveda de ganancias
+- Boveda de la loteria
+- Boveda de ganancias ⚠️
+#### Finalizar lotería
+Instrucción para eliminar una loteria. Para realizar esta accion, la 'boveda de la loteria', debera no tener fondos. Al eliminar esta cuenta, se debe hacer burn 🏗️, de los tokens creados.
+Tambien se 'cancela' el token del evento
+##### Información
 
+##### Cuentas PDA
+
+
+
+#### Parar lotería
+Instrucción para parar la lotería. Esta instruccion simplemente inabilitara o habilitara otras instrucciones. *Switcher*
+##### Información
+##### Cuentas PDA
+
+### Dudas
+- [ ] Al cerrar una cuenta PDA con data asignada, tipo la cuenta `evento`, se elimina la data de la blockchain
+- [ ] ❌😅 Al cerrar una token_account PDA, como la `boveda_evento`, esta se 'volvera' a utilizar al asignarle las mismas semillas. Es posible mantener los tokens. 'Entiendo que no' -> Se podria utilizar una cuenta 'común' del programa ('boveda ganancias USDC', 'boveda ganancias SOL', etc..) para cada token.
+
+### To Do

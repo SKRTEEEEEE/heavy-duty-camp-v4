@@ -23,4 +23,14 @@ mod manejador_loterias {
         instrucciones::crear_loteria(ctx, id, nombre, descripcion, precio_token, tipo_loteria)?;
         Ok(())
     }
+
+    pub fn eliminar_loteria(ctx: Context<EliminarLoteria>)->Result<()>{
+        instrucciones::eliminar_loteria(ctx)?;
+        Ok(())    
+    }
+
+    pub fn parar_loteria(ctx: Context<PararLoteria>)->Result<()>{
+        instrucciones::parar_loteria(ctx)?;
+        Ok(())
+    }
 }
