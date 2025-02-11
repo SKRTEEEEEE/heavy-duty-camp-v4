@@ -5,12 +5,8 @@ He intentado hacer deploy en local pero por alguna razon tiene problemas con anc
 
 use anchor_lang::prelude::*;
 use anchor_spl::token::*;
-// use anchor_lang::prelude::{Context, Result, Signer, SystemAccount, Program, Sysvar, Rent, Account};
-// use anchor_spl::token::{Token, TokenAccount, Transfer, Mint, CloseAccount, transfer, close_account};
 
 
-
-// declare_id!("H7xXLvqYyyJ25NDEAL5tYFrs4nBC2EYAGfiMQKf2PQjR");
 declare_id!("AwgKKrojMXaPZYcvYq8YSrJhRE6oqfgghbEo2nADypR7");
 
 #[program]

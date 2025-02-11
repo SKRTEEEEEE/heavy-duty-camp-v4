@@ -1,16 +1,25 @@
 use anchor_lang::prelude::*;
+use crate::instrucciones::*;
 
-declare_id!("2tvTrWEr7jHtjmLmpT2XqrUHdJPb9ndZZEQZZ4B1zVWV");
+// treamos los modulos al scope
+mod colecciones;
+mod instrucciones;
+
+declare_id!("GVEW7KHyM4knGLYQXyME1gzAxvtDGP9oPoVcppXYoNwH");
 
 #[program]
-pub mod manejador_loterias {
+mod manejador_loterias {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        msg!("Greetings from: {:?}", ctx.program_id);
+    // creamos la instruccion crear evento
+    pub fn crear_loteria(
+        ctx: Context<CrearLoteria>,
+        id: String,
+        nombre: String,
+        descripcion: String,
+        precio_token: f64,
+    ) -> Result<()> {
+        instrucciones::crear_loteria(ctx, id, nombre, descripcion, precio_token)?;
         Ok(())
     }
 }
-
-#[derive(Accounts)]
-pub struct Initialize {}

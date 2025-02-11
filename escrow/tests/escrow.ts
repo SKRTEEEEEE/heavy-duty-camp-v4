@@ -5,15 +5,15 @@ import * as web3 from "@solana/web3.js";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { assert } from "chai";
 import { Program } from "@coral-xyz/anchor";
+import * as anchor from "@coral-xyz/anchor";
 import { IntercambiadorTokenSpl } from "../target/types/intercambiador_token_spl";
 import { BN } from "bn.js";
-
 describe("Test", () => {
   // antes de nada definimos las cuentas que vamos a necesitar
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
-  const program = anchor.workspace.ManejadorEventos as Program<IntercambiadorTokenSpl>;
+  const program = anchor.workspace.IntercambiadorTokenSpl as Program<IntercambiadorTokenSpl>;
 
   // tokens
   let tokenA: PublicKey; // example: USDC
@@ -104,7 +104,7 @@ describe("Test", () => {
 
     // llamamos a la isntrucción
     let txHash = await program.methods
-      .incializar(id, cantidadTokenA, cantidadTokenB)
+      .inicializar(id, cantidadTokenA, cantidadTokenB)
       .accounts({
         escrow: escrow,
         inicializador: inicializador.publicKey,

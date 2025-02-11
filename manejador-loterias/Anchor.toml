@@ -1,18 +1,18 @@
 [toolchain]
 
 [features]
-resolution = true
+seeds = false
 skip-lint = false
 
 [programs.localnet]
-manejador_loterias = "2tvTrWEr7jHtjmLmpT2XqrUHdJPb9ndZZEQZZ4B1zVWV"
+manejador_loterias = "GVEW7KHyM4knGLYQXyME1gzAxvtDGP9oPoVcppXYoNwH"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "Localnet"
-wallet = "~/.config/solana/id.json"
+wallet = "/home/sektersyto/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"

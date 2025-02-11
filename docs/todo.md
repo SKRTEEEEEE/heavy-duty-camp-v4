@@ -75,9 +75,13 @@ declare_id!("<AQUI_IRA_LA_CLAVE_PUBLICA_DE_EJEMPLO>");
     _podemos cambiar la version de nuestro archivo `Cargo.lock` [(toda la info, aquí)](https://github.com/coral-xyz/anchor/issues/3392):_
 
         version = 3
+
 ##### deploy
 - deploy: `anchor deploy`
-
+- deploy a devnet: `anchor deploy --provider.cluster devnet`
+##### tet
+- test: `anchor test`
+- test a devnet: `anchor test --provider.cluster devnet`
 ## teoria
 ### [1. Cuentas y programas](./HDC%20v4%20-%20Clase%20#1.pdf)
 #### Cuentas
