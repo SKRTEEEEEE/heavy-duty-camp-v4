@@ -1,12 +1,100 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::*;
 use crate::colecciones::*;
+use crate::utilidades::*;
+
 /*
 Esta función es válida para el caso en el que no hay 
 ningun colaborador y no se han vendido tickets, e decir: 
 boveda de ganancias en 0 tokens
 boveda del evento en 0 tokens
 */
+pub fn eliminar_evento(ctx: Context<EliminarEvento>) -> Result<()> {
+    // La cuenta del Evento que es una PDA es la autoridad sobre todas las cuentas a eliminar
+    // por lo que necesitamos sus semillas para firmar
+    let semillas_firma: &[&[&[u8]]] = &[&[
+        ctx.accounts.evento.id.as_ref(),        // id del evento
+        Evento::SEMILLA_EVENTO.as_bytes(),      // "evento"
+        ctx.accounts.evento.autoridad.as_ref(), // pubKey de la autoridad
+        &[ctx.accounts.evento.bump_evento],     // bump
+    ]];
+
+    /*
+        Cerramos las cunetas de las bóvedas:
+        Para esto hacemos un CPI a la instrucción CloseAccount
+        del token program.
+
+        PD: La cuenta evento no debemos cerrarla ya que se cierran 'automaticamente' porque se lo hemos indicado
+    */
+    // cerramos la boveda del evento
+    let cerrar_boveda_evento = CpiContext::new(
+        ctx.accounts.token_program.to_account_info(),
+        CloseAccount {
+            account: ctx.accounts.boveda_evento.to_account_info(), // cuenta a cerrar
+            destination: ctx.accounts.autoridad.to_account_info(), // se devuelve la renta al usuario incializador
+            authority: ctx.accounts.evento.to_account_info(),      // el evento debe autorizar
+        },
+    ).with_signer(semillas_firma); // firma con PDA
+
+    // llamamos a la CPI
+    close_account(cerrar_boveda_evento)?;
+    // cerramos la boveda de ganacias
+    let cerrar_boveda_ganancias = CpiContext::new(
+        ctx.accounts.token_program.to_account_info(),
+        CloseAccount {
+            account: ctx.accounts.boveda_ganancias.to_account_info(), // cuenta a cerrar
+            destination: ctx.accounts.autoridad.to_account_info(), // se devuelve la renta al usuario incializador
+            authority: ctx.accounts.evento.to_account_info(),      // el evento debe autorizar
+        },
+    ).with_signer(semillas_firma); // firma con PDA
+
+    //  llamamos a la CPI
+    close_account(cerrar_boveda_ganancias)?;
+
+    // cerramos la boveda de ganacias
+    let cerrar_boveda_ganancias = CpiContext::new(
+        ctx.accounts.token_program.to_account_info(),
+        CloseAccount {
+            account: ctx.accounts.boveda_ganancias.to_account_info(), // cuenta a cerrar
+            destination: ctx.accounts.autoridad.to_account_info(), // se devuelve la renta al usuario incializador
+            authority: ctx.accounts.evento.to_account_info(),      // el evento debe autorizar
+        },
+    ).with_signer(semillas_firma); // firma con PDA
+
+    //  llamamos a la CPI
+    close_account(cerrar_boveda_ganancias)?;
+    /*
+    Una vez eliminadas las cuentas de las bóvedas, lo que sigue es
+    eliminar la cuenta Mint del token del evento, sin embargo, esto
+    solo se puede hacer si se utiliza el token program con extensiones.
+    Al haber utilizado el token program tradicional, podemos "desactivar" 
+    la cuenta mint, revocando los permisos de autoridad de mint
+    */
+
+    // Como DESACTIVAR una cuenta mint:
+    // el supply DEBE ser 0 -> esto se cuemple ya que no hay colaboradores
+    // no puede tener mint authority
+
+    // revocamos la autoridad
+    let revocar_autoridad = CpiContext::new(
+        ctx.accounts.token_program.to_account_info(),
+        SetAuthority {
+            account_or_mint: ctx.accounts.token_evento.to_account_info(), // cuenta Mint a actualizar
+            current_authority: ctx.accounts.evento.to_account_info(),     // autoridad a revocar
+        },
+    ).with_signer(semillas_firma); // el evento firma PDA
+
+    // llamamos a la CPI
+    set_authority(
+        revocar_autoridad,
+        spl_token::instruction::AuthorityType::MintTokens, // tipo de autoridad a revocar, en este caso mint authority
+        None, // nueva autoridad -> para "desactivar" debe ser None
+    )?;
+
+    // con el Token extensions podriamos cerrar la cuenta Mint al cerrar el evento
+
+    Ok(())
+}
 
 /*
 Esta instruccion va a consistir en eliminar la cuenta que almacena
@@ -32,9 +120,9 @@ pub struct EliminarEvento<'info> {
         ],
         bump = evento.bump_evento,
 
-        constraint = evento.total_sponsors == 0,
-        constraint = evento.tokens_vendidos == 0,
-        constraint = evento.autoridad == autoridad.key(),
+        constraint = evento.total_sponsors == 0 @ CodigoError::EventoConSponsors, ,
+        constraint = evento.tokens_vendidos == 0 @ CodigoError::EventoConSponsors, ,
+        constraint = evento.autoridad == autoridad.key() @ CodigoError::UsuarioNoAutorizado,
         //anotamos la intencion de cerrar la cuenta
         close = autoridad
     )]
@@ -47,7 +135,7 @@ pub struct EliminarEvento<'info> {
             evento.key().as_ref(),
         ],
         bump = evento.bump_boveda_evento,
-        constraint = boveda_evento.amount == 0
+        constraint = boveda_evento.amount == 0 @ CodigoError::BovedaDelEventoNoVacia,
     )]
     pub boveda_evento: Account<'info, TokenAccount>,
 
@@ -58,7 +146,7 @@ pub struct EliminarEvento<'info> {
             evento.key().as_ref(),
         ],
         bump = evento.bump_boveda_ganancias,
-        constraint = boveda_ganancias.amount == 0
+        constraint = boveda_ganancias.amount == 0 @ CodigoError::BovedaDeGananciasNoVacia, 
         )]
     pub boveda_ganancias: Account<'info, TokenAccount>,
 
